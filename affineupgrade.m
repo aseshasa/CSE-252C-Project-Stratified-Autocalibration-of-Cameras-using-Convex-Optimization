@@ -24,20 +24,20 @@ gamma = -[ P34.*P12.*P23 - P34.*P13.*P22 - P33.*P12.*P24 - P32.*P14.*P23 + ...
   P11.*P32.*P24 + P32.*P14.*P21 + P12.*P24.*P31 - P14.*P22.*P31, P33.*P12.*P21 - ...
   P11.*P33.*P22 + P11.*P32.*P23 - P32.*P13.*P21 - P12.*P23.*P31 + P13.*P22.*P31 ];
 
-data.aH = alpha*Hqa';
-data.bH = beta*Hqa';
-data.cH = gamma*Hqa';
-data.dH = ones(size(data.aH,1),1)*Hqa(:,4)';
+aH = alpha*Hqa';
+bH = beta*Hqa';
+cH = gamma*Hqa';
+dH = ones(size(aH,1),1)*Hqa(:,4)';
 data.l = l(1:3); data.u = u(1:3);
 data.qstar = (l(1:3)+u(1:3))/2;
 data.phi = -Inf;
 data.phi_lb = -Inf;
 data.isref = false;
-hand1 = @(x)costfunc(x,data.aH,data.bH,data.cH,data.dH);
+hand1 = @(x)costfunc(x,aH,bH,cH,dH);
 data = refine(hand1, data);
-hand2 = @(x,y)eqn21(data.aH, data.bH, data.cH, data.dH, x, y);
+hand2 = @(x,y)eqn21(aH, bH, cH, dH, x, y);
 data = branchandbound(hand2, hand1, data, tolerance);
-% [data.phi, data.phi_lb, data.qstar] = eqn21(data.aH, data.bH, data.cH, data.dH, data.l, data.u);
+% [data.phi, data.phi_lb, data.qstar] = eqn21(aH, bH, cH, dH, data.l, data.u);
 [~, idx] = min(data.phi);
 p=Hqa'*[data.qstar(:,idx);1];
 p=p(1:3)/p(4);

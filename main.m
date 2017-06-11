@@ -12,13 +12,13 @@ deltap = zeros(1,50);
 deltaf = deltap;
 deltauv = deltap;
 deltas = deltap;
-for i = 1:50
+for i = 1
 	disp(i);
-	anim = generateToyAnimation(0, 'isProj', true, 'nPoint', 100, 'nFrame', 5);
+	anim = generateToyAnimation(0, 'isProj', true, 'nPoint', 100, 'nFrame', 100);
 	sigma = std(std(std(anim.P)));
 	anim.W = anim.W + 0*sigma*randn(size(anim.W));
 	[HEye, Hqa, p] = affineupgrade(anim, 1e-5);
-	[H, K] = metric_upgrade(anim, p);
+	[H, K] = metric_upgrade(anim, p, 1e-5);
 	p = [p;1];
 	deltap(i) = norm(p-p0);
 	deltaf(i) = abs(K(1,1)/f10-1) + abs(K(2,2)/f20-1);
