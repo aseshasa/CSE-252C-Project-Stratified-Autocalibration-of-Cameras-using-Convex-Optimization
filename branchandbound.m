@@ -1,16 +1,25 @@
 function data = branchandbound(func, costfunc, data, tolerance)
+f = inf;
 for i = 1:100
 % 	disp(i);
 	[data, newb] = branch(data);
 	try
 		data = bound(func, data, newb);
 	catch ME
-		break;
-	end
-	if abs((min(data.phi)-min(data.phi_lb))/min(data.phi)) <= tolerance
-		break;
+		if length(ME.message) == 95
+			break;
+		else
+			rethrow(ME);
+		end
 	end
 	data = refine(costfunc, data);
+	if abs((min(data.phi)-min(data.phi_lb))/min(data.phi)) <= tolerance
+		break;
+	elseif abs((min(data.phi)-f)/min(data.phi))
+		break;
+	else
+		f = min(data.phi);
+	end
 end
 end
 
