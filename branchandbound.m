@@ -1,19 +1,19 @@
 function data = branchandbound(func, costfunc, data, tolerance)
 f = inf;
-for i = 1:100
+for i = 1:40
 % 	disp(i);
 	[data, newb] = branch(data);
 	try
 		data = bound(func, data, newb);
 	catch ME
-		if length(ME.message) == 95
+		if length(ME.message) == 95 || length(ME.message) == 88
 			break;
 		else
 			rethrow(ME);
 		end
 	end
 	data = refine(costfunc, data);
-	if abs((min(data.phi)-min(data.phi_lb))/min(data.phi)) <= tolerance
+	if abs(min(data.phi)-min(data.phi_lb)) <= tolerance
 		break;
 	elseif abs((min(data.phi)-f)/min(data.phi)) <= tolerance
 		break;

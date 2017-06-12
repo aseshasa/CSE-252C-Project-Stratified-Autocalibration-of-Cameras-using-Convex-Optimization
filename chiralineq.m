@@ -35,6 +35,7 @@ end
 C = zeros(4, nFrame);
 for i = 1:nFrame
 	C(:,i) = null(P(:,:,i));
+	C(:,i) = C(:,i)/C(4,i);
 end
 
 %alg 21.1: Find H
