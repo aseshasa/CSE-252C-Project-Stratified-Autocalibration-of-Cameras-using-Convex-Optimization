@@ -15,7 +15,7 @@ for i = 1:100
 	data = refine(costfunc, data);
 	if abs((min(data.phi)-min(data.phi_lb))/min(data.phi)) <= tolerance
 		break;
-	elseif abs((min(data.phi)-f)/min(data.phi))
+	elseif abs((min(data.phi)-f)/min(data.phi)) <= tolerance
 		break;
 	else
 		f = min(data.phi);
