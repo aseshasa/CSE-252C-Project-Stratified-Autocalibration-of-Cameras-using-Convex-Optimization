@@ -28,7 +28,7 @@ function [phi, phi_lb, k] = eqn28(H_inf, l, u)
 [l_mat, u_mat] = prop_interval(l, u);
 [L_lambda, U_lambda] = find_lambda_bounds(H_inf, l_mat,u_mat);
 num_views = size(H_inf,3);
-cvx_begin sdp
+cvx_begin sdp quiet
 	variable omega(3,3) nonnegative semidefinite;
 	variable lambda(num_views);
 	variable v(num_views, 3,3);
