@@ -1,5 +1,6 @@
 function data = branchandbound(func, costfunc, data, tolerance)
 for i = 1:100
+% 	disp(i);
 	[data, newb] = branch(data);
 	try
 		data = bound(func, data, newb);

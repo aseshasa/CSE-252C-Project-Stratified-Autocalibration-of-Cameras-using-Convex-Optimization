@@ -59,7 +59,7 @@ d_l = dbd(:,:,1);
 d_u = dbd(:,:,2);
 m = size(aH,1);
 cvx_begin sdp quiet
-	variables v(3) r e f(m,1) g(m,1) tf1(m,1) tg1(m,1) ypf2(m,2) ypg2(m,2);
+	variables v(3) r e f(m,1) g(m,1) tf1(m,1) tg1(m,1) ypf2(m,3) ypg2(m,4);
 	minimize(r);
 	subject to
 		a = aH*[v;1];
@@ -104,9 +104,9 @@ cvx_begin
 		end
 		if sum(idx_case12)
 			{-x(idx_case12),-y(idx_case12),z(idx_case12),yp(idx_case12,3)} <In> case1_relax(-x(idx_case12), ...
-				-xu(idx_case12),-xl(idx_case12),-y(idx_case12),-yu(idx_case12),-yl(idx_case12),z(idx_case12),yp(idx_case12,1));
+				-xu(idx_case12),-xl(idx_case12),-y(idx_case12),-yu(idx_case12),-yl(idx_case12),z(idx_case12),yp(idx_case12,3));
 			{-x(idx_case12),y(idx_case12),-z(idx_case12),yp(idx_case12,4)} <In> case1_relax(-x(idx_case12), ...
-				-xu(idx_case12),-xl(idx_case12),y(idx_case12),yl(idx_case12),yu(idx_case12),-z(idx_case12),yp(idx_case12,2));
+				-xu(idx_case12),-xl(idx_case12),y(idx_case12),yl(idx_case12),yu(idx_case12),-z(idx_case12),yp(idx_case12,4));
 		end
 		if sum(idx_case2)
 			{x(idx_case2),y(idx_case2),z(idx_case2),t(idx_case2)} <In> case2_relax(x(idx_case2),xl(idx_case2), ...
