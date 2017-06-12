@@ -84,7 +84,7 @@ xl13 = nthroot(xl,3);
 xu13 = nthroot(xu,3);
 cvx_begin
 	subject to
-		z <= xl13.^8+(x-xl).*(xu13.^8-xl13.^8)./(xu-xl+1e-30.*xl);
+		z <= xl13.^8+(x-xl).*(xu13.^8-xl13.^8)./(xu-xl);
 cvx_end
 ret = {x, z};
 end
@@ -122,7 +122,7 @@ xu13 = nthroot(xu, 3);
 xl13 = nthroot(xl, 3);
 cvx_begin
 	subject to
-		lambda = (x-xl)./(xu-xl+1e-30.*xl);
+		lambda = (x-xl)./(xu-xl);
 		z >= xl13.*yp + xu13.*(y - yp);
 		(1 - lambda).*yl <= yp <= (1 - lambda).*yu;
 		lambda.*yl <= y - yp <= lambda.*yu;
