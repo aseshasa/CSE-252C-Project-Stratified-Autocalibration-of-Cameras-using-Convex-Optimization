@@ -59,7 +59,7 @@ d_l = dbd(:,:,1);
 d_u = dbd(:,:,2);
 m = size(aH,1);
 cvx_begin sdp quiet
-	variables v(3) r e f(m,1) g(m,1) tf1(m,1) tg1(m,1) ypf2(m,3) ypg2(m,4);
+	variables v(3) r e f(m,1) g(m,1) tf1(m,1) tg1(m,1) ypf2(m,4) ypg2(m,4);
 	minimize(r);
 	subject to
 		a = aH*[v;1];
