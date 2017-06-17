@@ -1,5 +1,4 @@
 function [HEye, Hqa, p] = affineupgrade(anim, tolerance)
-nFrame = anim.nFrame;
 [HEye, Hqa, l, u, P] = chiralineq(anim);
 
 P11=squeeze(P(1,1,:));
@@ -34,7 +33,6 @@ data.phi = -Inf;
 data.phi_lb = -Inf;
 data.isref = false;
 hand1 = @(x)costfunc(x,aH,bH,cH,dH);
-data = refine(hand1, data);
 hand2 = @(x,y)eqn21(aH, bH, cH, dH, x, y);
 data = branchandbound(hand2, hand1, data, tolerance);
 % [data.phi, data.phi_lb, data.qstar] = eqn21(aH, bH, cH, dH, data.l, data.u);
@@ -68,8 +66,7 @@ cvx_begin sdp quiet
 		d = dH*[v;1];
 		{d(1),e} <In> relax_x83(d(1), d_l(1), d_u(1), e);
 		l <= v <= u;
-		r >= 0; e >= 0;
-		{[2.*(f - g); r-e], r+e} <In> lorentz(m+1);
+		{(f - g), r, e} <In> rotated_lorentz(m);
 		{f,c,a,tf1,ypf2} <In> x13y_relax(f, c, c_l, c_u, a, a_l, a_u, tf1, ypf2);
 		{g,d,b,tg1,ypg2} <In> x13y_relax(g, d, d_l, d_u, b, b_l, b_u, tg1, ypg2);
 cvx_end
@@ -179,22 +176,11 @@ cvx_end
 ret = {x, y, z};
 end
 
-function [res,grad]=costfunc(v, aH, bH, cH, dH)
+function [cost,grad]=costfunc(v, aH, bH, cH, dH)
 v(4,:)=1;
 a = aH*v;
 b = bH*v;
 c13 = nthroot(cH*v, 3);
 d13=nthroot(dH*v,3);
-res=sum((c13.*a-bsxfun(@times,d13,b)).^2,1)./d13(1).^8;
-grad=[];
-if nargout==2;
-  deriv1=(bsxfun(@times,1/3*c13.^(-2).*a,cH(:,1:3))+...
-    bsxfun(@times,c13,aH(:,1:3))-...
-    bsxfun(@times,1/3*d13.^(-2).*b,dH(:,1:3))-...
-    bsxfun(@times,d13,bH(:,1:3)));
-  deriv1=sum(bsxfun(@times,deriv1,2*(c13.*a-d13.*b)./...
-    d13.^8),1);
-  grad=deriv1+(-8/3)*res*(dH(1,1:3)/dH(1));
-  grad=grad';
-end
+cost=sum((c13.*a-bsxfun(@times,d13,b)).^2,1)./d13(1).^8;
 end

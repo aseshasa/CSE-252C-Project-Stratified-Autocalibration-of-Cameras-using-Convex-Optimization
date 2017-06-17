@@ -1,12 +1,16 @@
-function data = branchandbound(func, costfunc, data, tolerance)
+function data = branchandbound(bndfunc, costfunc, data, tolerance)
 f = inf;
-for i = 1:40
+data = refine(costfunc, data);
+for i = 1:100
 % 	disp(i);
 	[data, newb] = branch(data);
 	try
-		data = bound(func, data, newb);
+		data = bound(bndfunc, data, newb);
 	catch ME
 		if length(ME.message) == 95 || length(ME.message) == 88
+			disp('Warning: Divide by zero-type error');
+			disp(ME.message);
+			disp('Ending BnB');
 			break;
 		else
 			rethrow(ME);
@@ -15,10 +19,6 @@ for i = 1:40
 	data = refine(costfunc, data);
 	if abs(min(data.phi)-min(data.phi_lb)) <= tolerance
 		break;
-	elseif abs((min(data.phi)-f)/min(data.phi)) <= tolerance
-		break;
-	else
-		f = min(data.phi);
 	end
 end
 end
@@ -64,4 +64,37 @@ data.phi(idx) = []; data.phi = [data.phi, p1];
 data.phi_lb(idx) = []; data.phi_lb = [data.phi_lb, plb1];
 data.isref(idx) = []; data.isref = [data.isref, isref];
 newb = size(data.l,2)-2*length(idx)+1:size(data.l,2);
+end
+
+function data = refine(func, data)
+[~,idx1] = min(data.phi_lb);
+idx2 = find(data.phi_lb < min(data.phi_lb(data.isref)) & ~data.isref);
+if ~data.isref(idx1)
+	idx = unique([idx2, idx1]);
+else
+	idx = idx2;
+end
+for i = idx
+	temp = min([max([data.qstar(:,i),data.l(:,i)],[],2),data.u(:,i)],[],2);
+	randval = rand(size(data.l,1),10000) .* ((data.u(:,i)-data.l(:,i))*ones(1,10000));
+	randq = [temp, randval + data.l(:,i)*ones(1,10000)];
+	randcost = func(randq);
+	[~,ind] = min(randcost);
+	temp = randq(:,ind);
+	temp = fmincon(func,temp,[],[],[],[],data.l(:,i),data.u(:,i),[],optimset(...
+    'GradObj','off','Hessian','off','Algorithm','active-set','Display','off'));
+	temp = min([max([temp,data.l(:,i)],[],2),data.u(:,i)],[],2);
+	tempcost = func(temp);
+	if tempcost<data.phi(i)
+		data.phi(i) = tempcost; data.qstar(:,i) = temp;
+	end
+	data.isref(i)=true;
+end
+bad = find(data.phi_lb > min(data.phi));
+
+if ~isempty(bad) && length(bad)~=length(data.phi)
+  data.l(:,bad)=[]; data.u(:,bad)=[]; data.qstar(:,bad)=[];
+  data.phi_lb(bad)=[]; data.phi(bad)=[];
+  data.isref(bad)=[];
+end
 end

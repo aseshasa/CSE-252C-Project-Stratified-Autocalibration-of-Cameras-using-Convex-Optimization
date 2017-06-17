@@ -26,8 +26,14 @@ for i = 1:nFrame
 end
 for i = 1:nPoint
 	if sum(sign(w(:,i,:))) < 0
-		X(:,i,:) = -X(:,i,:);
+		X(:,i) = -X(:,i);
 		w(:,i,:) = -w(:,i,:);
+	end
+end
+
+for i = 1:nPoint
+	if any(w(:,i,:)) < 0
+		X(:,i) = [];
 	end
 end
 
