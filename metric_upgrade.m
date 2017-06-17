@@ -15,7 +15,6 @@ data.qstar = (data.l+data.u)/2;
 data.phi = -Inf;
 data.phi_lb = -Inf;
 data.isref = false;
-data = refine(hand1, data);
 data = branchandbound(hand2, hand1, data, tolerance);
 % [data.phi, data.phi_lb, data.k] = eqn28(H_inf, data.l, data.u);
 [~, idx] = min(data.phi);
