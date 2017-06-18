@@ -1,5 +1,4 @@
 function data = branchandbound(bndfunc, costfunc, data, tolerance)
-f = inf;
 data = refine(costfunc, data);
 for i = 1:100
 % 	disp(i);
